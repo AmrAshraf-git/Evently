@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../resources/app_colors.dart';
+
 class MyTextFormField extends StatelessWidget {
   final Widget? prefixIcon;
   final Widget? suffixIcon;
@@ -27,11 +29,17 @@ class MyTextFormField extends StatelessWidget {
       validator: validator,
       keyboardType: textInputType,
       obscureText: isObscure,
+      style: TextStyle(fontSize: 20),
       decoration: InputDecoration(
         labelText: hint,
-        border: OutlineInputBorder(),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(16),
+            borderSide: BorderSide(color: AppColors.darkGray,)
+        ),
         prefixIcon: prefixIcon,
-        suffixIcon: suffixIcon
+        suffixIcon: suffixIcon, 
+        
+
       ),
 
     );

@@ -1,31 +1,36 @@
-import 'package:evently_app/core/utils/email_validation.dart';
-import 'package:evently_app/core/widgets/my_text_form_field.dart';
-import 'package:evently_app/presentation/screens/onboarding/widgets/language_switcher.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/svg.dart';
 import '../../../../core/resources/app_colors.dart';
 import '../../../../core/resources/assets_manager.dart';
+import '../../../../core/utils/email_validation.dart';
+import '../../../../core/widgets/my_text_form_field.dart';
+import '../../onboarding/widgets/language_switcher.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+
+class Register extends StatefulWidget {
+  const Register({super.key});
 
   @override
-  State<Login> createState() => _LoginState();
+  State<Register> createState() => _RegisterState();
 }
 
-class _LoginState extends State<Login> {
+class _RegisterState extends State<Register> {
+  late final TextEditingController? name;
   late final TextEditingController? emailController;
   late final TextEditingController? passwordController;
+  late final TextEditingController? rePasswordController;
   final GlobalKey<FormState> formKey = GlobalKey();
   bool _isObscureText = true;
   bool isScreenSizeLoaded=false;
-  late final  double width;
-  late final  double height;
+  late final double width;
+  late final double height;
 
   @override
   void initState() {
+    name= TextEditingController();
     emailController = TextEditingController();
     passwordController = TextEditingController();
+    rePasswordController = TextEditingController();
     // WidgetsBinding.instance.addPostFrameCallback((_) async {
     //   width=MediaQuery.sizeOf(context).width;
     //   height=MediaQuery.sizeOf(context).height;
@@ -71,6 +76,25 @@ class _LoginState extends State<Login> {
                   height: height * 0.16,
                 ),
                 const SizedBox(height: 24),
+
+                Container(
+                    margin: EdgeInsets.only(bottom: 16),
+                    child: MyTextFormField(
+                      validator: (input){
+                        if(input==null || input.trim().isEmpty) {
+                          return "Name can't be empty";
+                        }
+                        return null;
+                      },
+                      textEditingController: emailController,
+                      hint: "Name",
+                      prefixIcon: Icon(
+                        Icons.person,
+                        color: AppColors.gray,
+                      ),
+                      textInputType: TextInputType.emailAddress,
+                    )),
+
                 Container(
                     margin: EdgeInsets.only(bottom: 16),
                     child: MyTextFormField(
@@ -121,48 +145,71 @@ class _LoginState extends State<Login> {
                       textInputType: TextInputType.visiblePassword,
                       isObscure: _isObscureText,
                     )),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    style: ButtonStyle(splashFactory: NoSplash.splashFactory),
-                    onPressed: () {},
-                    child: Text(
-                      "Forget Password?",
-                      style: TextStyle(
-                          fontSize: 16,
-                          decoration: TextDecoration.underline,
-                          fontStyle: FontStyle.italic,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.primary),
-                    ),
-                  ),
-                ),
+
+                Container(
+                    margin: EdgeInsets.only(bottom: 8),
+                    child: MyTextFormField(
+                      validator: (input){
+                        if(input==null || input.trim().isEmpty) {
+                          return "Re Password can't be empty";
+                        }
+                        else if (input!=passwordController?.text){
+                          return "Passwords do not match";
+                        }
+                        else if(Validation.isValidPassword(input).isNotEmpty) {
+                          return Validation.isValidPassword(input);
+                        }
+                        return null;
+                      },
+                      textEditingController: passwordController,
+                      hint: "Re Password",
+                      prefixIcon: Icon(Icons.lock_rounded, color: AppColors.gray),
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _isObscureText = !_isObscureText;
+                            });
+                          },
+                          icon: Icon(
+                            color: AppColors.gray,
+                            _isObscureText
+                                ? Icons.visibility_off_rounded
+                                : Icons.visibility_rounded,
+                          )),
+                      textInputType: TextInputType.visiblePassword,
+                      isObscure: _isObscureText,
+                    )),
+
                 const SizedBox(height: 24),
                 SizedBox(
                   width: width,
                   child: ElevatedButton(
                       onPressed: () {
-                        login();
+                        createAccount();
                       },
-                      child: Text("Login",
+                      child: Text("Create Account",
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.w500,
                           ))),
                 ),
-                const SizedBox(height: 8),
+
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Don't Have Account?",
+                      "Already have account?",
                       style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: 16,
-                      ),
+                      fontSize: 16,
+                      color: AppColors.primary,
+                      fontWeight: FontWeight.bold,
                     ),
-                    Text(
-                      "Create Account",
+                    ),
+                    TextButton(
+                    style: ButtonStyle(splashFactory: NoSplash.splashFactory),
+                    onPressed: () {},
+                    child: Text(
+                      "Login",
                       style: TextStyle(
                           fontSize: 16,
                           decoration: TextDecoration.underline,
@@ -170,40 +217,10 @@ class _LoginState extends State<Login> {
                           fontWeight: FontWeight.bold,
                           color: AppColors.primary),
                     ),
-                  ],
-                ),
-                Container(
-                  margin: EdgeInsets.all(8),
-                  child: Text(
-                    "OR",
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: AppColors.primary,
-                      fontWeight: FontWeight.bold,
-                    ),
                   ),
+                  ]
                 ),
-                MaterialButton(
-                  onPressed: () {},
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: BorderSide(color: AppColors.primary)),
-                  padding: EdgeInsets.symmetric(vertical: 14, horizontal: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SvgPicture.asset(
-                        "assets/icons/Google.svg",
-                        semanticsLabel: 'Google Logo',
-                      ),
-                      Text("\t  Login With Google",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.w500,
-                          )),
-                    ],
-                  ),
-                ),
+
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 24),
                   child: LanguageSwitcher(),
@@ -218,17 +235,19 @@ class _LoginState extends State<Login> {
   }
 
 
-  @override
+@override
   void dispose() {
+    name?.dispose();
     emailController?.dispose();
     passwordController?.dispose();
+    rePasswordController?.dispose();
     super.dispose();
   }
 
 
-  void login() {
+  void createAccount() {
     if(formKey.currentState?.validate()==false){
-        return;
+      return;
     }
   }
 }

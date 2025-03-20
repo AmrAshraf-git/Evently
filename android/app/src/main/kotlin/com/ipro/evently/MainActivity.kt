@@ -1,4 +1,4 @@
-package com.example.evently_app
+package com.ipro.evently
 
 import io.flutter.embedding.android.FlutterActivity
 
